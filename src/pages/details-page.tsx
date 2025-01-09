@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
 import useFetchDetails from "../hooks/useFetchDetails";
 import { useSelector } from "react-redux";
-import moment from "moment";
+import { format } from "date-fns";
 import CardList from "../components/card-list";
 import { RootState } from "../store/reducer";
+import useFetch from "../hooks/useFetch";
 
+// Define types for movie details, cast, and crew
 interface CrewMember {
   job: string;
   name: string;
@@ -38,12 +40,14 @@ interface MovieDetails {
 const DetailsPage = () => {
   const params = useParams();
   const imageURL = useSelector((state: RootState) => state.movieoData.imageURL);
-  const { data }: { data: MovieDetails | null } = useFetchDetails(
+
+  // Fetch movie details and cast data with proper types
+  const { data }: { data: MovieDetails | undefined } = useFetchDetails(
     `/${params?.explore}/${params?.id}`
   );
   const {
     data: castData,
-  }: { data: { cast: CastMember[]; crew: CrewMember[] } | null } =
+  }: { data: { crew: CrewMember[]; cast: CastMember[] } | undefined } =
     useFetchDetails(`/${params?.explore}/${params?.id}/credits`);
   const { data: similarData } = useFetch(
     `/${params?.explore}/${params?.id}/similar`
@@ -55,115 +59,102 @@ const DetailsPage = () => {
   const [playVideo, setPlayVideo] = useState(false);
   const [playVideoId, setPlayVideoId] = useState("");
 
-  const handlePlayVideo = (id: string) => {
+  const handlePlayVideo = useCallback((id: string) => {
     setPlayVideoId(id);
     setPlayVideo(true);
-  };
+  }, []);
 
-  const duration = data?.runtime
-    ? [Math.floor(data.runtime / 60), data.runtime % 60]
-    : ["0", "0"];
-  const writer = castData?.crew
-    ?.filter((el) => el.job === "Writer")
-    .map((el) => el.name)
-    .join(", ");
+  console.log(playVideo,playVideoId)
 
-  return (
+  const formatRuntime = (runtime?: number) =>
+    runtime ? `${Math.floor(runtime / 60)}h ${runtime % 60}m` : "N/A";
+
+  // Destructure the movie details data safely with fallback to default values
+  const {
+    backdrop_path = "",
+    poster_path = "",
+    title="",
+    name = "",
+    
+    tagline = "No Tagline",
+    vote_average = 0,
+    vote_count = 0,
+    runtime = 0,
+    status = "Unknown",
+    release_date = "",
+    revenue = 0,
+    overview = "No overview available",
+  } = data || {};
+
+  // Destructure the cast and crew data
+  // const writer =
+  //   castData?.crew
+  //     ?.filter((el: CrewMember) => el.job === "Writer")
+  //     ?.map((el) => el.name)
+  //     ?.join(", ") || "Unknown";
+
+  return data ? (
     <div>
+      {/* Banner */}
       <div className="w-full h-[280px] relative hidden lg:block">
-        <div className="w-full h-full">
-          {data?.backdrop_path && (
-            <img
-              src={`${imageURL}${data.backdrop_path}`}
-              className="h-full w-full object-cover"
-              alt="Backdrop"
-            />
-          )}
-        </div>
-        <div className="absolute w-full h-full top-0 bg-gradient-to-t from-neutral-900/90 to-transparent"></div>
+        <img
+          src={`${imageURL}${backdrop_path}`}
+          alt={`${title || name} backdrop`}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute top-0 w-full h-full bg-gradient-to-t from-neutral-900/90 to-transparent"></div>
       </div>
 
-      <div className="container mx-auto px-3 py-16 lg:py-0 flex flex-col lg:flex-row gap-5 lg:gap-10 ">
-        <div className="relative mx-auto lg:-mt-28 lg:mx-0 w-fit min-w-60">
-          {data?.poster_path && (
-            <img
-              src={`${imageURL}${data.poster_path}`}
-              className="h-80 w-60 object-cover rounded"
-              alt="Poster"
-            />
-          )}
+      {/* Details Section */}
+      <div className="container mx-auto px-3 py-16 lg:flex lg:gap-10">
+        {/* Poster */}
+        <div className="relative lg:-mt-28">
+          <img
+            src={`${imageURL}${poster_path}`}
+            alt={`${title || name} poster`}
+            className="h-80 w-60 object-cover rounded"
+          />
           <button
-            onClick={() => handlePlayVideo(data?.id.toString() || "")}
-            className="mt-3 w-full py-2 px-4 text-center bg-white text-black rounded font-bold text-lg hover:bg-gradient-to-l from-red-500 to-orange-500 hover:scale-105 transition-all">
+            onClick={() =>
+              handlePlayVideo((data as MovieDetails).id.toString())
+            }
+            aria-label="Play Video"
+            className="mt-3 w-full py-2 bg-white text-black rounded hover:bg-gradient-to-l from-red-500 to-orange-500">
             Play Now
           </button>
         </div>
 
+        {/* Overview */}
         <div>
           <h2 className="text-2xl lg:text-4xl font-bold text-white">
-            {data?.title || data?.name}
+            {title || name}
           </h2>
-          <p className="text-neutral-400">{data?.tagline}</p>
+          <h2 className="text-2xl lg:text-4xl font-bold text-white">
+            {castData}
+          </h2>
+          <p className="text-neutral-400">{tagline}</p>
 
-          <div className="flex items-center gap-3">
-            <p>Rating : {data?.vote_average?.toFixed(1)}+</p>
+          <div className="flex gap-3 text-neutral-400">
+            <p>Rating: {vote_average?.toFixed(1)}</p>
             <span>|</span>
-            <p>View : {data?.vote_count}</p>
+            <p>Votes: {vote_count}</p>
             <span>|</span>
-            <p>
-              Duration : {duration[0]}h {duration[1]}m
-            </p>
+            <p>Runtime: {formatRuntime(runtime)}</p>
           </div>
 
-          <div>
-            <h3 className="text-xl font-bold text-white mb-1">Overview</h3>
-            <p>{data?.overview}</p>
-
-            <div className="flex items-center gap-3 my-3 text-center">
-              <p>Status : {data?.status}</p>
-              <span>|</span>
-              <p>
-                Release Date :{" "}
-                {data?.release_date
-                  ? moment(data.release_date).format("MMMM Do YYYY")
-                  : "N/A"}
-              </p>
-              <span>|</span>
-              <p>Revenue : ${data?.revenue?.toLocaleString()}</p>
-            </div>
-          </div>
-
-          <div>
-            <p>
-              <span className="text-white">Director</span> :{" "}
-              {castData?.crew.find((member) => member.job === "Director")?.name}
-            </p>
-
-            <p>
-              <span className="text-white">Writer</span> : {writer || "N/A"}
-            </p>
-          </div>
-
-          <h2 className="font-bold text-lg">Cast :</h2>
-          <div className="grid grid-cols-[repeat(auto-fit,96px)] gap-5 my-4">
-            {castData?.cast
-              ?.filter((el) => el?.profile_path)
-              .map((starCast) => (
-                <div key={starCast.name}>
-                  <img
-                    src={`${imageURL}${starCast.profile_path}`}
-                    className="w-24 h-24 object-cover rounded-full"
-                    alt={starCast.name}
-                  />
-                  <p className="font-bold text-center text-sm text-neutral-400">
-                    {starCast.name}
-                  </p>
-                </div>
-              ))}
-          </div>
+          <p>Status: {status}</p>
+          <p>
+            Release Date:{" "}
+            {release_date
+              ? format(new Date(release_date), "MMMM do yyyy")
+              : "N/A"}
+          </p>
+          <p>Revenue: ${revenue?.toLocaleString() || "N/A"}</p>
+          <p>Overview: {overview}</p>
         </div>
       </div>
 
+      {/* Cast and Recommendations */}
       <div>
         <CardList
           data={similarData}
@@ -172,11 +163,13 @@ const DetailsPage = () => {
         />
         <CardList
           data={recommendationData}
-          heading={`Recommendation ${params.explore}`}
+          heading={`Recommendations`}
           media_type={params.explore}
         />
       </div>
     </div>
+  ) : (
+    <div>Loading...</div>
   );
 };
 

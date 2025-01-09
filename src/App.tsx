@@ -42,7 +42,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="sign-up" element={<SignUp />} />
         <Route path=":explore" element={<ExplorePage />} />
-        <Route path=":explore/id" element={<DetailsPage />} />
+        <Route path=":explore/:id" element={<DetailsPage />} />
         <Route path="login" element={<Login />} />
       </Routes>
     </div>

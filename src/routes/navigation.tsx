@@ -27,14 +27,12 @@ const Navigation = () => {
               active === nav.title ? "text-white" : "text-White"
             } ${index === NavLinks.length - 1 ? "mr-0" : "mr-10"}`}
             onClick={() => setActive(nav.title)}>
-            <a href={`#${nav.id}`}>{nav.title}</a>
+            <a href={`${nav.link}`}>{nav.title}</a>
           </li>
         ))}
       </ul>
       <div className="ml-10 bg-green p-3 rounded-md cursor-pointer">
-        <Link to={"/sign-up"}>
-          Sign up
-          </Link>
+        <Link to={"/sign-up"}>Sign up</Link>
       </div>
       {/* Mobile Navigation */}
       <div className="sm:hidden flex flex-1 justify-end items-center">
@@ -55,7 +53,7 @@ const Navigation = () => {
                   active === nav.title ? "text-white" : "text-darkBlack"
                 } ${index === NavLinks.length - 1 ? "mb-0" : "mb-3"}`}
                 onClick={() => setActive(nav.title)}>
-                <a href={`#${nav.id}`}>{nav.title}</a>
+                <a href={`${nav.link}`}>{nav.title}</a>
               </li>
             ))}
           </ul>

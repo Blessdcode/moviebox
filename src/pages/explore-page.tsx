@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Cards from "../components/cards";
 
 interface ExploreData {
@@ -16,6 +16,7 @@ const ExplorePage: React.FC = () => {
   const [pageNo, setPageNo] = useState(1);
   const [data, setData] = useState<ExploreData[]>([]);
   const [totalPageNo, setTotalPageNo] = useState(0);
+console.log(totalPageNo)
 
   const fetchData = async () => {
     try {
@@ -53,16 +54,18 @@ const ExplorePage: React.FC = () => {
   return (
     <div className="py-16">
       <div className="container mx-auto">
+        <Link to="/" > Go back </Link>
         <h3 className="capitalize text-lg lg:text-xl font-semibold my-3">
           Popular {params.explore} show
         </h3>
 
         <div className="grid grid-cols-[repeat(auto-fit,230px)] gap-6 justify-center lg:justify-start">
-          {data.map((exploreData) => (
+          {data.map((exploreData, index) => (
             <Cards
               key={exploreData.id}
-              data={exploreData}
+              data={{ ...exploreData, title: exploreData.title || "" }}
               media_type={params.explore}
+              index={index}
             />
           ))}
         </div>
