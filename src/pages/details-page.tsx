@@ -46,9 +46,10 @@ const DetailsPage = () => {
     `/${params?.explore}/${params?.id}`
   );
   const {
-    data: castData,
-  }: { data: { crew: CrewMember[]; cast: CastMember[] } | undefined } =
-    useFetchDetails(`/${params?.explore}/${params?.id}/credits`);
+    data: castData = { crew: [], cast: [] },
+  }: { data: { crew: CrewMember[]; cast: CastMember[] } | undefined } = useFetchDetails(
+    `/${params?.explore}/${params?.id}/credits`
+  );
   const { data: similarData } = useFetch(
     `/${params?.explore}/${params?.id}/similar`
   );
@@ -155,9 +156,13 @@ const DetailsPage = () => {
           <p>Overview: {overview}</p>
           <ul className="text-neutral-400 flex items-center gap-2">
             <p>Cast:</p>
-            {castData?.cast.map((member: string) => (
-              <li key={member.name}>{member.name}</li>
-            )) || <li>No Cast Available</li>}
+            {castData?.cast?.length ? (
+              castData.cast.map((member: CastMember) => (
+                <li key={member.name}>{member.name}</li>
+              ))
+            ) : (
+              <li>No Cast Available</li>
+            )}
           </ul>
         </div>
       </div>
