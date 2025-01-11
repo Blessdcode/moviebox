@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useFetchDetails from "../hooks/useFetchDetails";
 import { useSelector } from "react-redux";
 import { format } from "date-fns";
@@ -64,7 +64,7 @@ const DetailsPage = () => {
     setPlayVideo(true);
   }, []);
 
-  console.log(playVideo,playVideoId)
+  console.log(playVideo, playVideoId);
 
   const formatRuntime = (runtime?: number) =>
     runtime ? `${Math.floor(runtime / 60)}h ${runtime % 60}m` : "N/A";
@@ -73,9 +73,8 @@ const DetailsPage = () => {
   const {
     backdrop_path = "",
     poster_path = "",
-    title="",
+    title = "",
     name = "",
-    
     tagline = "No Tagline",
     vote_average = 0,
     vote_count = 0,
@@ -96,7 +95,7 @@ const DetailsPage = () => {
   return data ? (
     <div>
       {/* Banner */}
-      <div className="w-full h-[280px] relative hidden lg:block">
+      <div className="w-full h-[580px] relative hidden lg:block">
         <img
           src={`${imageURL}${backdrop_path}`}
           alt={`${title || name} backdrop`}
@@ -107,12 +106,18 @@ const DetailsPage = () => {
 
       {/* Details Section */}
       <div className="container mx-auto px-3 py-16 lg:flex lg:gap-10">
+        <Link
+          to="/"
+          className="absolute md:bg-green rounded-lg text-xl md:p-3 p-1 left-8 top-2 cursor-pointer md:hover:bg-orange z-50">
+          {" "}
+          &lt;Go Back{" "}
+        </Link>
         {/* Poster */}
         <div className="relative lg:-mt-28">
           <img
             src={`${imageURL}${poster_path}`}
             alt={`${title || name} poster`}
-            className="h-80 w-60 object-cover rounded"
+            className="h-full md:h-80 w-full md:w-72 object-cover rounded"
           />
           <button
             onClick={() =>
@@ -128,9 +133,6 @@ const DetailsPage = () => {
         <div>
           <h2 className="text-2xl lg:text-4xl font-bold text-white">
             {title || name}
-          </h2>
-          <h2 className="text-2xl lg:text-4xl font-bold text-white">
-            {castData}
           </h2>
           <p className="text-neutral-400">{tagline}</p>
 
@@ -151,6 +153,12 @@ const DetailsPage = () => {
           </p>
           <p>Revenue: ${revenue?.toLocaleString() || "N/A"}</p>
           <p>Overview: {overview}</p>
+          <ul className="text-neutral-400 flex items-center gap-2">
+            <p>Cast:</p>
+            {castData?.cast.map((member: string) => (
+              <li key={member.name}>{member.name}</li>
+            )) || <li>No Cast Available</li>}
+          </ul>
         </div>
       </div>
 

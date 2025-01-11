@@ -15,10 +15,10 @@ const Home = () => {
     <div>
       <HeroPage />
       <CardList data={trendingData} heading={"Trending"} trending={true} />
-      <CardList data={nowPlayingData} heading={"Now Playing"} trending={true} />
-      <CardList data={onTheAirShowData} heading={"On The Air"} trending={true} />
-      <CardList data={topRatedData} heading={"Top Rated Movies"} trending={true} />
-      <CardList data={popularTvShowData} heading={"Popular Tv Show"} trending={true} />
+      <CardList data={nowPlayingData} heading={"Now Playing"} trending={true} media_type={ "movie"} />
+      <CardList data={topRatedData} heading={"Top Rated Movies"} trending={true} media_type={ "movie"}/>
+      <CardList data={popularTvShowData} heading={"Popular Tv Show"} trending={true} media_type={ "tv"}/>
+      <CardList data={onTheAirShowData} heading={"On The Air"} trending={true} media_type={ "tv"}/>
     </div>
   );
 };
