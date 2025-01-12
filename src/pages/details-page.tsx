@@ -47,9 +47,8 @@ const DetailsPage = () => {
   );
   const {
     data: castData = { crew: [], cast: [] },
-  }: { data: { crew: CrewMember[]; cast: CastMember[] } | undefined } = useFetchDetails(
-    `/${params?.explore}/${params?.id}/credits`
-  );
+  }: { data: { crew: CrewMember[]; cast: CastMember[] } | undefined } =
+    useFetchDetails(`/${params?.explore}/${params?.id}/credits`);
   const { data: similarData } = useFetch(
     `/${params?.explore}/${params?.id}/similar`
   );
@@ -138,27 +137,49 @@ const DetailsPage = () => {
           <p className="text-neutral-400">{tagline}</p>
 
           <div className="flex gap-3 text-neutral-400">
-            <p>Rating: {vote_average?.toFixed(1)}</p>
-            <span>|</span>
-            <p>Votes: {vote_count}</p>
-            <span>|</span>
-            <p>Runtime: {formatRuntime(runtime)}</p>
+            <p>
+              <span className="text-yellow">Rating:</span>{" "}
+              {vote_average?.toFixed(1)}
+            </p>
+            <span className="text-yellow">|</span>
+            <p>
+              <span className="text-yellow">Votes:</span> {vote_count}
+            </p>
+            <span className="text-yellow">|</span>
+            <p>
+              <span className="text-yellow">Runtime: </span>{" "}
+              {formatRuntime(runtime)}
+            </p>
           </div>
 
-          <p>Status: {status}</p>
           <p>
-            Release Date:{" "}
+            <span className="text-yellow">Status:</span> {status}
+          </p>
+          <p className="text-yellow">
+            <span className="text-yellow">Release Date:</span>{" "}
             {release_date
               ? format(new Date(release_date), "MMMM do yyyy")
               : "N/A"}
           </p>
-          <p>Revenue: ${revenue?.toLocaleString() || "N/A"}</p>
-          <p>Overview: {overview}</p>
-          <ul className="text-neutral-400 flex items-center gap-2">
-            <p>Cast:</p>
+          <p>
+            {" "}
+            <span className="text-yellow"> Revenue:</span> $
+            {revenue?.toLocaleString() || "N/A"}
+          </p>
+          <p>
+            {" "}
+            <span className="text-yellow"> Overview: </span>
+            {overview}
+          </p>
+          <ul className="text-neutral-400 flex items-center flex-wrap gap-2 text-ellipsis line-clamp-3">
+            <p>
+              <span className="text-yellow"> Cast: </span>
+            </p>
             {castData?.cast?.length ? (
               castData.cast.map((member: CastMember) => (
-                <li key={member.name}>{member.name}</li>
+                <li key={member.name} className="text-ellipsis line-clamp-3 text-wrap">
+                  {member.name}
+                </li>
               ))
             ) : (
               <li>No Cast Available</li>
