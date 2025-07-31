@@ -85,13 +85,6 @@ const DetailsPage = () => {
     overview = "No overview available",
   } = data || {};
 
-  // Destructure the cast and crew data
-  // const writer =
-  //   castData?.crew
-  //     ?.filter((el: CrewMember) => el.job === "Writer")
-  //     ?.map((el) => el.name)
-  //     ?.join(", ") || "Unknown";
-
   return data ? (
     <div>
       {/* Banner */}
