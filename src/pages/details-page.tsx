@@ -8,7 +8,6 @@ import CardList from "../components/card-list";
 import { RootState } from "../store/reducer";
 import useFetch from "../hooks/useFetch";
 
-// Define types for movie details, cast, and crew
 interface CrewMember {
   job: string;
   name: string;
